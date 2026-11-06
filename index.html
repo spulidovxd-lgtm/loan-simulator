@@ -33,6 +33,13 @@ header{background:var(--ink);color:#fff;padding:36px 20px 96px}
 .logo svg{width:24px;height:24px}
 h1{font-size:clamp(1.7rem,4vw,2.4rem);letter-spacing:-.02em;font-weight:800}
 .sub{color:#B5C4D6;margin-top:10px;max-width:56ch}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.lang{display:flex;align-items:center;background:rgba(255,255,255,.12);border-radius:999px;padding:4px}
+.lang>svg{color:#B5C4D6;margin:0 6px 0 10px}
+.lang button{font:inherit;font-weight:700;font-size:.85rem;color:#C9D6E4;background:none;border:0;border-radius:999px;padding:8px 16px;cursor:pointer;transition:background .2s,color .2s}
+.lang button:hover{color:#fff}
+.lang button[aria-pressed=true]{background:#fff;color:var(--ink)}
+.lang button:focus-visible{box-shadow:0 0 0 3px rgba(255,255,255,.6)}
 
 main{max-width:1120px;margin:-64px auto 48px;padding:0 20px;display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:0 10px 30px -18px rgba(16,36,58,.35)}
@@ -103,7 +110,7 @@ tbody tr:hover{background:#EAF0FF}
 
 @media print{
   body{background:#fff}
-  header,form,.actions,.link,.no-print{display:none!important}
+  header,form,.lang,.actions,.link,.no-print{display:none!important}
   .print-only{display:block;margin-bottom:12px}
   main{display:block;margin:0;padding:0}
   .card{box-shadow:none;border:0;padding:0}
@@ -126,49 +133,57 @@ tbody tr:hover{background:#EAF0FF}
   <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M12 11v6m-3-3 3 3 3-3"/></symbol>
   <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></symbol>
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.500 3 14.500 0 18M12 3c-3 3.500-3 14.500 0 18"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></symbol>
 </svg>
 
 <header>
   <div class="wrap">
-    <div class="brand">
-      <div class="logo"><svg><use href="#i-bank"/></svg></div>
-      <h1>Loan Simulator</h1>
+    <div class="top">
+      <div class="brand">
+        <div class="logo"><svg><use href="#i-bank"/></svg></div>
+        <h1>Loan Simulator</h1>
+      </div>
+      <div class="lang" role="group" aria-label="Idioma / Language">
+        <svg><use href="#i-globe"/></svg>
+        <button type="button" data-lang="es" lang="es">Español</button>
+        <button type="button" data-lang="en" lang="en">English</button>
+      </div>
     </div>
-    <p class="sub">Calcula tu cuota mensual y consulta cuánto pagas de capital e intereses en cada periodo.</p>
+    <p class="sub" data-i18n="sub">Calcula tu cuota mensual y consulta cuánto pagas de capital e intereses en cada periodo.</p>
   </div>
 </header>
 
 <main>
   <!-- FORMULARIO -->
   <section class="card no-print" aria-labelledby="t-datos">
-    <h2 id="t-datos"><svg><use href="#i-calc"/></svg>Datos del préstamo</h2>
+    <h2 id="t-datos"><svg><use href="#i-calc"/></svg><span data-i18n="datos">Datos del préstamo</span></h2>
     <form id="form" novalidate>
       <div class="field">
-        <label for="monto">Monto del préstamo</label>
+        <label for="monto" data-i18n="monto">Monto del préstamo</label>
         <div class="input"><svg><use href="#i-coin"/></svg>
-          <input type="number" id="monto" inputmode="decimal" placeholder="Ej: 10000000" min="1" step="any" value="10000000"></div>
+          <input type="number" id="monto" inputmode="decimal" data-ph="phMonto" placeholder="Ej: 10000000" min="1" step="any" value="10000000"></div>
       </div>
       <div class="field">
-        <label for="tasa">Tasa de interés (%)</label>
+        <label for="tasa" data-i18n="tasa">Tasa de interés (%)</label>
         <div class="input"><svg><use href="#i-pct"/></svg>
-          <input type="number" id="tasa" inputmode="decimal" placeholder="Ej: 12" min="0" step="any" value="12"></div>
+          <input type="number" id="tasa" inputmode="decimal" data-ph="phTasa" placeholder="Ej: 12" min="0" step="any" value="12"></div>
       </div>
       <div class="field">
-        <label id="l-tipo">Tipo de tasa</label>
+        <label id="l-tipo" data-i18n="tipo">Tipo de tasa</label>
         <div class="seg" role="radiogroup" aria-labelledby="l-tipo">
-          <input type="radio" name="tipo" id="t-anual" value="anual" checked><label for="t-anual">Efectiva anual</label>
-          <input type="radio" name="tipo" id="t-mensual" value="mensual"><label for="t-mensual">Efectiva mensual</label>
+          <input type="radio" name="tipo" id="t-anual" value="anual" checked><label for="t-anual" data-i18n="anual">Efectiva anual</label>
+          <input type="radio" name="tipo" id="t-mensual" value="mensual"><label for="t-mensual" data-i18n="mensual">Efectiva mensual</label>
         </div>
       </div>
       <div class="field">
-        <label for="plazo">Plazo (meses)</label>
+        <label for="plazo" data-i18n="plazo">Plazo (meses)</label>
         <div class="input"><svg><use href="#i-cal"/></svg>
-          <input type="number" id="plazo" inputmode="numeric" placeholder="Ej: 36" min="1" max="600" step="1" value="36"></div>
+          <input type="number" id="plazo" inputmode="numeric" data-ph="phPlazo" placeholder="Ej: 36" min="1" max="600" step="1" value="36"></div>
       </div>
       <p id="error" role="alert"></p>
-      <button class="btn primary" type="submit"><svg><use href="#i-calc"/></svg>Calcular préstamo</button>
-      <button class="link" type="button" id="btnLimpiar">Limpiar datos</button>
+      <button class="btn primary" type="submit"><svg><use href="#i-calc"/></svg><span data-i18n="calcular">Calcular préstamo</span></button>
+      <button class="link" type="button" id="btnLimpiar" data-i18n="limpiar">Limpiar datos</button>
     </form>
   </section>
 
@@ -176,39 +191,39 @@ tbody tr:hover{background:#EAF0FF}
   <section class="card" aria-live="polite">
     <div id="vacio" class="empty no-print">
       <svg><use href="#i-chart"/></svg>
-      <h2 style="justify-content:center">Tu simulación aparecerá aquí</h2>
-      <p>Completa los datos y pulsa “Calcular préstamo”.</p>
+      <h2 style="justify-content:center" data-i18n="vacioT">Tu simulación aparecerá aquí</h2>
+      <p data-i18n="vacioP">Completa los datos y pulsa “Calcular préstamo”.</p>
     </div>
 
     <div id="resultado" class="hidden">
       <p class="print-only"><strong>Loan Simulator</strong> — <span id="pdatos"></span></p>
       <div class="hero">
-        <div class="donut" id="donut"><div><b id="pctInt">0%</b>en intereses</div></div>
+        <div class="donut" id="donut"><div><b id="pctInt">0%</b><span data-i18n="enInt">en intereses</span></div></div>
         <div>
-          <p class="cuota-l">Cuota mensual fija</p>
+          <p class="cuota-l" data-i18n="cuotaFija">Cuota mensual fija</p>
           <p class="cuota num" id="cuota">—</p>
           <p class="legend">
-            <span><i class="dot" style="background:var(--capital)"></i>Capital</span>
-            <span><i class="dot" style="background:var(--interest)"></i>Intereses</span>
+            <span><i class="dot" style="background:var(--capital)"></i><span data-i18n="capital">Capital</span></span>
+            <span><i class="dot" style="background:var(--interest)"></i><span data-i18n="intereses">Intereses</span></span>
           </p>
         </div>
       </div>
       <div class="stats">
-        <div class="stat"><small>Tasa efectiva mensual</small><strong id="rTem">—</strong></div>
-        <div class="stat"><small>Total intereses</small><strong id="rInt">—</strong></div>
-        <div class="stat"><small>Total a pagar</small><strong id="rTot">—</strong></div>
+        <div class="stat"><small data-i18n="tem">Tasa efectiva mensual</small><strong id="rTem">—</strong></div>
+        <div class="stat"><small data-i18n="totInt">Total intereses</small><strong id="rInt">—</strong></div>
+        <div class="stat"><small data-i18n="totPag">Total a pagar</small><strong id="rTot">—</strong></div>
       </div>
 
       <div class="head">
-        <h2><svg><use href="#i-list"/></svg>Tabla de amortización</h2>
+        <h2><svg><use href="#i-list"/></svg><span data-i18n="tabla">Tabla de amortización</span></h2>
         <div class="actions no-print">
-          <button class="btn ghost" id="btnPdf" type="button"><svg><use href="#i-pdf"/></svg>Exportar PDF</button>
-          <button class="btn ghost" id="btnPrint" type="button"><svg><use href="#i-print"/></svg>Imprimir</button>
+          <button class="btn ghost" id="btnPdf" type="button"><svg><use href="#i-pdf"/></svg><span data-i18n="pdf">Exportar PDF</span></button>
+          <button class="btn ghost" id="btnPrint" type="button"><svg><use href="#i-print"/></svg><span data-i18n="print">Imprimir</span></button>
         </div>
       </div>
       <div class="tw">
         <table>
-          <thead><tr><th>Periodo</th><th>Cuota</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead>
+          <thead><tr><th data-i18n="thP">Periodo</th><th data-i18n="thC">Cuota</th><th data-i18n="thI">Interés</th><th data-i18n="capital">Capital</th><th data-i18n="thS">Saldo</th></tr></thead>
           <tbody id="cuerpo"></tbody>
         </table>
       </div>
@@ -218,14 +233,65 @@ tbody tr:hover{background:#EAF0FF}
 
 <script>
 const $ = id => document.getElementById(id);
-const money = n => n.toLocaleString("es-CO", {style:"currency", currency:"COP", maximumFractionDigits:2});
-const num2 = n => n.toLocaleString("es-CO", {minimumFractionDigits:2, maximumFractionDigits:2});
+const T = {
+ es:{title:"Loan Simulator",sub:"Calcula tu cuota mensual y consulta cuánto pagas de capital e intereses en cada periodo.",
+  datos:"Datos del préstamo",monto:"Monto del préstamo",tasa:"Tasa de interés (%)",tipo:"Tipo de tasa",
+  anual:"Efectiva anual",mensual:"Efectiva mensual",plazo:"Plazo (meses)",
+  phMonto:"Ej: 10000000",phTasa:"Ej: 12",phPlazo:"Ej: 36",calcular:"Calcular préstamo",limpiar:"Limpiar datos",
+  vacioT:"Tu simulación aparecerá aquí",vacioP:"Completa los datos y pulsa “Calcular préstamo”.",
+  enInt:"en intereses",cuotaFija:"Cuota mensual fija",capital:"Capital",intereses:"Intereses",
+  tem:"Tasa efectiva mensual",totInt:"Total intereses",totPag:"Total a pagar",tabla:"Tabla de amortización",
+  pdf:"Exportar PDF",print:"Imprimir",thP:"Periodo",thC:"Cuota",thI:"Interés",thS:"Saldo",
+  eMonto:"Ingresa un monto mayor que 0.",eTasa:"Ingresa una tasa igual o mayor que 0.",ePlazo:"El plazo debe estar entre 1 y 600 meses.",
+  ea:"E.A.",em:"E.M.",meses:"meses",pdfTitle:"Loan Simulator - Tabla de amortización",
+  pdfD:"Monto: {m}   Tasa: {t}% {k}   Plazo: {n} meses",kA:"efectiva anual",kM:"efectiva mensual",
+  pdfR:"Tasa efectiva mensual: {i}%   Cuota: {c}   Total intereses: {ti}   Total a pagar: {tp}",
+  pdfNoLib:"No se pudo cargar la librería de PDF. Se abrirá la impresión: elige “Guardar como PDF”.",file:"amortizacion-prestamo.pdf"},
+ en:{title:"Loan Simulator",sub:"Calculate your monthly payment and see how much goes to principal and interest in each period.",
+  datos:"Loan details",monto:"Loan amount",tasa:"Interest rate (%)",tipo:"Rate type",
+  anual:"Effective annual",mensual:"Effective monthly",plazo:"Term (months)",
+  phMonto:"E.g. 10000000",phTasa:"E.g. 12",phPlazo:"E.g. 36",calcular:"Calculate loan",limpiar:"Clear data",
+  vacioT:"Your simulation will appear here",vacioP:"Fill in the details and press “Calculate loan”.",
+  enInt:"in interest",cuotaFija:"Fixed monthly payment",capital:"Principal",intereses:"Interest",
+  tem:"Effective monthly rate",totInt:"Total interest",totPag:"Total to pay",tabla:"Amortization schedule",
+  pdf:"Export PDF",print:"Print",thP:"Period",thC:"Payment",thI:"Interest",thS:"Balance",
+  eMonto:"Enter an amount greater than 0.",eTasa:"Enter a rate equal to or greater than 0.",ePlazo:"The term must be between 1 and 600 months.",
+  ea:"E.A.R.",em:"E.M.R.",meses:"months",pdfTitle:"Loan Simulator - Amortization schedule",
+  pdfD:"Amount: {m}   Rate: {t}% {k}   Term: {n} months",kA:"effective annual",kM:"effective monthly",
+  pdfR:"Effective monthly rate: {i}%   Payment: {c}   Total interest: {ti}   Total to pay: {tp}",
+  pdfNoLib:"The PDF library could not be loaded. Print will open: choose “Save as PDF”.",file:"loan-amortization.pdf"}
+};
+const LOC = {es:"es-CO", en:"en-US"};
+let lang = "es", errKey = "";
+try { lang = localStorage.getItem("lang") || ""; } catch(e){}
+if(!T[lang]) lang = (navigator.language || "es").toLowerCase().startsWith("en") ? "en" : "es";
+
+const t = (k, v) => (T[lang][k] ?? k).replace(/\{(\w+)\}/g, (_, x) => v[x]);
+const money = n => n.toLocaleString(LOC[lang], {style:"currency", currency:"COP", maximumFractionDigits:2});
+const num2  = n => n.toLocaleString(LOC[lang], {minimumFractionDigits:2, maximumFractionDigits:2});
+const setErr = k => { errKey = k; $("error").textContent = k ? t(k) : ""; };
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.title = t("title");
+  document.querySelectorAll("[data-i18n]").forEach(e => e.textContent = t(e.dataset.i18n));
+  document.querySelectorAll("[data-ph]").forEach(e => e.placeholder = t(e.dataset.ph));
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  setErr(errKey);
+  if(datos) mostrar();           // vuelve a dibujar resultados con el nuevo formato
+}
+function setLang(l){
+  lang = l;
+  try { localStorage.setItem("lang", l); } catch(e){}
+  applyLang();
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
 let datos = null; // última simulación
 
 $("form").addEventListener("submit", e => { e.preventDefault(); calcular(); });
 $("btnLimpiar").addEventListener("click", () => {
   $("form").reset(); ["monto","tasa","plazo"].forEach(i => $(i).value = "");
-  $("error").textContent = ""; $("resultado").classList.add("hidden"); $("vacio").classList.remove("hidden"); datos = null;
+  setErr(""); $("resultado").classList.add("hidden"); $("vacio").classList.remove("hidden"); datos = null;
 });
 $("btnPrint").addEventListener("click", () => window.print());
 $("btnPdf").addEventListener("click", exportarPDF);
@@ -235,11 +301,11 @@ function calcular(){
   const tasa  = parseFloat($("tasa").value);
   const plazo = parseInt($("plazo").value, 10);
   const tipo  = document.querySelector('input[name="tipo"]:checked').value;
-  const err = $("error"); err.textContent = "";
+  setErr("");
 
-  if(!(monto > 0)) return err.textContent = "Ingresa un monto mayor que 0.";
-  if(!(tasa >= 0)) return err.textContent = "Ingresa una tasa igual o mayor que 0.";
-  if(!(plazo >= 1 && plazo <= 600)) return err.textContent = "El plazo debe estar entre 1 y 600 meses.";
+  if(!(monto > 0)) return setErr("eMonto");
+  if(!(tasa >= 0)) return setErr("eTasa");
+  if(!(plazo >= 1 && plazo <= 600)) return setErr("ePlazo");
 
   // Tasa efectiva mensual
   let i = tasa / 100;
@@ -269,7 +335,7 @@ function mostrar(){
   $("rTot").textContent = money(total);
   $("pctInt").textContent = pct.toFixed(1) + "%";
   $("donut").style.background = `conic-gradient(var(--interest) 0 ${pct}%, var(--capital) ${pct}% 100%)`;
-  $("pdatos").textContent = `${money(d.monto)} · ${d.tasa}% ${d.tipo === "anual" ? "E.A." : "E.M."} · ${d.plazo} meses`;
+  $("pdatos").textContent = `${money(d.monto)} · ${d.tasa}% ${d.tipo === "anual" ? t("ea") : t("em")} · ${d.plazo} ${t("meses")}`;
   $("cuerpo").innerHTML = d.filas.map(f => `<tr>
     <td>${f.p}</td><td>${num2(f.cuota)}</td><td class="i">${num2(f.interes)}</td>
     <td class="c">${num2(f.capital)}</td><td>${num2(f.saldo)}</td></tr>`).join("");
@@ -277,22 +343,24 @@ function mostrar(){
 
 function exportarPDF(){
   if(!datos) return;
-  if(!window.jspdf){ alert("No se pudo cargar la librería de PDF. Se abrirá la impresión: elige “Guardar como PDF”."); return window.print(); }
+  if(!window.jspdf){ alert(t("pdfNoLib")); return window.print(); }
   const d = datos, doc = new window.jspdf.jsPDF();
-  doc.setFontSize(18); doc.text("Loan Simulator - Tabla de amortización", 14, 18);
+  doc.setFontSize(18); doc.text(t("pdfTitle"), 14, 18);
   doc.setFontSize(10);
-  doc.text(`Monto: ${num2(d.monto)}   Tasa: ${d.tasa}% ${d.tipo === "anual" ? "efectiva anual" : "efectiva mensual"}   Plazo: ${d.plazo} meses`, 14, 27);
-  doc.text(`Tasa efectiva mensual: ${(d.i*100).toFixed(4)}%   Cuota: ${num2(d.cuota)}   Total intereses: ${num2(d.totInt)}   Total a pagar: ${num2(d.monto + d.totInt)}`, 14, 33);
+  doc.text(t("pdfD", {m:num2(d.monto), t:d.tasa, k:t(d.tipo === "anual" ? "kA" : "kM"), n:d.plazo}), 14, 27);
+  doc.text(t("pdfR", {i:(d.i*100).toFixed(4), c:num2(d.cuota), ti:num2(d.totInt), tp:num2(d.monto + d.totInt)}), 14, 33);
   doc.autoTable({
     startY: 39,
-    head: [["Periodo","Cuota","Interés","Capital","Saldo"]],
+    head: [[t("thP"), t("thC"), t("thI"), t("capital"), t("thS")]],
     body: d.filas.map(f => [f.p, num2(f.cuota), num2(f.interes), num2(f.capital), num2(f.saldo)]),
     headStyles: {fillColor:[16,36,58]},
     styles: {halign:"right", fontSize:9},
     columnStyles: {0:{halign:"center"}}
   });
-  doc.save("amortizacion-prestamo.pdf");
+  doc.save(t("file"));
 }
+
+applyLang(); // idioma inicial (guardado o del navegador)
 </script>
 </body>
 </html>
