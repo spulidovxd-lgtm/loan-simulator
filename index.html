@@ -97,6 +97,12 @@ th:first-child,td:first-child{text-align:center}
 tbody tr:nth-child(even){background:#F8FAFC}
 tbody tr:hover{background:#EAF0FF}
 .i{color:#B9751A}.c{color:var(--capital);font-weight:500}
+.solid{background:var(--ink);color:#fff}
+.solid:hover{background:#1B3A58}
+.btn:disabled{opacity:.6;cursor:wait}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-weight:500;box-shadow:0 12px 30px -10px rgba(16,36,58,.6);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.report-head{justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--ink);padding-bottom:10px;margin-bottom:16px}
 .hidden{display:none!important}
 .print-only{display:none}
 
@@ -105,13 +111,17 @@ tbody tr:hover{background:#EAF0FF}
   .hero{grid-template-columns:1fr;justify-items:center;text-align:center}
   .legend{justify-content:center}
 }
-@media(max-width:520px){.stats{grid-template-columns:1fr}}
+@media(max-width:520px){.stats{grid-template-columns:1fr}.actions{width:100%}.actions .btn{flex:1}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
+@page{size:A4;margin:14mm}
 @media print{
   body{background:#fff}
+  .toast{display:none}
   header,form,.lang,.actions,.link,.no-print{display:none!important}
   .print-only{display:block;margin-bottom:12px}
+  .report-head{display:flex}
+  .stat{border:1px solid #CBD5E1}
   main{display:block;margin:0;padding:0}
   .card{box-shadow:none;border:0;padding:0}
   .tw{max-height:none;overflow:visible;border:0}
@@ -196,7 +206,7 @@ tbody tr:hover{background:#EAF0FF}
     </div>
 
     <div id="resultado" class="hidden">
-      <p class="print-only"><strong>Loan Simulator</strong> — <span id="pdatos"></span></p>
+      <div class="print-only report-head"><div><strong class="num" style="font-size:1.5rem">Loan Simulator</strong><br><span id="pdatos"></span></div><span id="pfecha"></span></div>
       <div class="hero">
         <div class="donut" id="donut"><div><b id="pctInt">0%</b><span data-i18n="enInt">en intereses</span></div></div>
         <div>
@@ -217,8 +227,8 @@ tbody tr:hover{background:#EAF0FF}
       <div class="head">
         <h2><svg><use href="#i-list"/></svg><span data-i18n="tabla">Tabla de amortización</span></h2>
         <div class="actions no-print">
-          <button class="btn ghost" id="btnPdf" type="button"><svg><use href="#i-pdf"/></svg><span data-i18n="pdf">Exportar PDF</span></button>
-          <button class="btn ghost" id="btnPrint" type="button"><svg><use href="#i-print"/></svg><span data-i18n="print">Imprimir</span></button>
+          <button class="btn solid" id="btnPdf" type="button" data-tt="ttPdf"><svg><use href="#i-pdf"/></svg><span data-i18n="pdf">Exportar PDF</span></button>
+          <button class="btn ghost" id="btnPrint" type="button" data-tt="ttPrint"><svg><use href="#i-print"/></svg><span data-i18n="print">Imprimir</span></button>
         </div>
       </div>
       <div class="tw">
@@ -230,6 +240,8 @@ tbody tr:hover{background:#EAF0FF}
     </div>
   </section>
 </main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -246,7 +258,10 @@ const T = {
   ea:"E.A.",em:"E.M.",meses:"meses",pdfTitle:"Loan Simulator - Tabla de amortización",
   pdfD:"Monto: {m}   Tasa: {t}% {k}   Plazo: {n} meses",kA:"efectiva anual",kM:"efectiva mensual",
   pdfR:"Tasa efectiva mensual: {i}%   Cuota: {c}   Total intereses: {ti}   Total a pagar: {tp}",
-  pdfNoLib:"No se pudo cargar la librería de PDF. Se abrirá la impresión: elige “Guardar como PDF”.",file:"amortizacion-prestamo.pdf"},
+  pdfNoLib:"No se pudo cargar la librería de PDF. Se abrirá la impresión: elige “Guardar como PDF”.",file:"amortizacion-prestamo.pdf",
+  total:"Total",pdfSub:"Simulación de préstamo - Sistema francés (cuota fija)",pageOf:"Página {p} de {n}",generado:"Generado el {d}",
+  noData:"Primero calcula un préstamo.",pdfBusy:"Generando PDF…",pdfOk:"PDF descargado correctamente",pdfErr:"No se pudo crear el PDF. Intenta de nuevo.",
+  printing:"Abriendo vista de impresión…",ttPdf:"Descargar la simulación en un archivo PDF",ttPrint:"Imprimir la simulación"},
  en:{title:"Loan Simulator",sub:"Calculate your monthly payment and see how much goes to principal and interest in each period.",
   datos:"Loan details",monto:"Loan amount",tasa:"Interest rate (%)",tipo:"Rate type",
   anual:"Effective annual",mensual:"Effective monthly",plazo:"Term (months)",
@@ -259,7 +274,10 @@ const T = {
   ea:"E.A.R.",em:"E.M.R.",meses:"months",pdfTitle:"Loan Simulator - Amortization schedule",
   pdfD:"Amount: {m}   Rate: {t}% {k}   Term: {n} months",kA:"effective annual",kM:"effective monthly",
   pdfR:"Effective monthly rate: {i}%   Payment: {c}   Total interest: {ti}   Total to pay: {tp}",
-  pdfNoLib:"The PDF library could not be loaded. Print will open: choose “Save as PDF”.",file:"loan-amortization.pdf"}
+  pdfNoLib:"The PDF library could not be loaded. Print will open: choose “Save as PDF”.",file:"loan-amortization.pdf",
+  total:"Total",pdfSub:"Loan simulation - French system (fixed payment)",pageOf:"Page {p} of {n}",generado:"Generated on {d}",
+  noData:"Calculate a loan first.",pdfBusy:"Creating PDF…",pdfOk:"PDF downloaded successfully",pdfErr:"The PDF could not be created. Please try again.",
+  printing:"Opening print preview…",ttPdf:"Download the simulation as a PDF file",ttPrint:"Print the simulation"}
 };
 const LOC = {es:"es-CO", en:"en-US"};
 let lang = "es", errKey = "";
@@ -275,6 +293,7 @@ function applyLang(){
   document.documentElement.lang = lang;
   document.title = t("title");
   document.querySelectorAll("[data-i18n]").forEach(e => e.textContent = t(e.dataset.i18n));
+  document.querySelectorAll("[data-tt]").forEach(e => e.title = t(e.dataset.tt));
   document.querySelectorAll("[data-ph]").forEach(e => e.placeholder = t(e.dataset.ph));
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
   setErr(errKey);
@@ -293,7 +312,7 @@ $("btnLimpiar").addEventListener("click", () => {
   $("form").reset(); ["monto","tasa","plazo"].forEach(i => $(i).value = "");
   setErr(""); $("resultado").classList.add("hidden"); $("vacio").classList.remove("hidden"); datos = null;
 });
-$("btnPrint").addEventListener("click", () => window.print());
+$("btnPrint").addEventListener("click", imprimir);
 $("btnPdf").addEventListener("click", exportarPDF);
 
 function calcular(){
@@ -341,22 +360,92 @@ function mostrar(){
     <td class="c">${num2(f.capital)}</td><td>${num2(f.saldo)}</td></tr>`).join("");
 }
 
+let tId, tituloOriginal = "";
+function toast(m){
+  const e = $("toast"); e.textContent = m; e.classList.add("show");
+  clearTimeout(tId); tId = setTimeout(() => e.classList.remove("show"), 2800);
+}
+const fechaTxt = () => new Date().toLocaleString(LOC[lang], {dateStyle:"long", timeStyle:"short"});
+
+/* ---------- IMPRIMIR ---------- */
+function imprimir(){
+  if(!datos) return toast(t("noData"));
+  toast(t("printing"));
+  setTimeout(() => window.print(), 250);
+}
+// Se ejecuta también con Ctrl+P / menú del navegador
+window.addEventListener("beforeprint", () => {
+  tituloOriginal = document.title;
+  $("pfecha").textContent = t("generado", {d: fechaTxt()});
+  if(datos) document.title = "Loan Simulator - " + num2(datos.monto) + " - " + datos.plazo + " " + t("meses");
+});
+window.addEventListener("afterprint", () => { if(tituloOriginal) document.title = tituloOriginal; });
+
+/* ---------- EXPORTAR PDF ---------- */
 function exportarPDF(){
-  if(!datos) return;
-  if(!window.jspdf){ alert(t("pdfNoLib")); return window.print(); }
-  const d = datos, doc = new window.jspdf.jsPDF();
-  doc.setFontSize(18); doc.text(t("pdfTitle"), 14, 18);
-  doc.setFontSize(10);
-  doc.text(t("pdfD", {m:num2(d.monto), t:d.tasa, k:t(d.tipo === "anual" ? "kA" : "kM"), n:d.plazo}), 14, 27);
-  doc.text(t("pdfR", {i:(d.i*100).toFixed(4), c:num2(d.cuota), ti:num2(d.totInt), tp:num2(d.monto + d.totInt)}), 14, 33);
+  if(!datos) return toast(t("noData"));
+  if(!window.jspdf){ alert(t("pdfNoLib")); return imprimir(); }
+  const btn = $("btnPdf"), lbl = btn.querySelector("span");
+  btn.disabled = true; lbl.textContent = t("pdfBusy");
+  setTimeout(() => {                       // deja pintar el estado "cargando"
+    try { crearPDF(); toast(t("pdfOk")); }
+    catch(e){ console.error(e); toast(t("pdfErr")); }
+    btn.disabled = false; lbl.textContent = t("pdf");
+  }, 80);
+}
+
+function crearPDF(){
+  const d = datos, doc = new window.jspdf.jsPDF({unit:"mm", format:"a4"});
+  const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  const ink=[16,36,58], teal=[14,159,138], amber=[185,117,26], mute=[94,113,134];
+
+  // Banda de título
+  doc.setFillColor(...ink); doc.rect(0, 0, W, 30, "F");
+  doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("Loan Simulator", 14, 14);
+  doc.setFont("helvetica","normal"); doc.setFontSize(10);
+  doc.text(t("pdfSub"), 14, 22); doc.text(fechaTxt(), W-14, 22, {align:"right"});
+
+  // Datos de entrada
+  doc.setTextColor(...ink); doc.setFontSize(10);
+  doc.text(t("pdfD", {m:num2(d.monto), t:d.tasa, k:t(d.tipo === "anual" ? "kA" : "kM"), n:d.plazo}), 14, 40);
+
+  // Tarjetas de resumen
+  const cards = [
+    [t("cuotaFija"), num2(d.cuota)],
+    [t("tem"), (d.i*100).toFixed(4) + " %"],
+    [t("totInt"), num2(d.totInt)],
+    [t("totPag"), num2(d.monto + d.totInt)]
+  ];
+  const cw = (W - 28 - 9) / 4;
+  cards.forEach((c, k) => {
+    const x = 14 + k * (cw + 3);
+    doc.setFillColor(243,246,250); doc.roundedRect(x, 46, cw, 19, 2, 2, "F");
+    doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...mute); doc.text(c[0], x+3, 52);
+    doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(...ink); doc.text(c[1], x+3, 60);
+  });
+
+  // Tabla de amortización
   doc.autoTable({
-    startY: 39,
+    startY: 72,
+    margin: {top: 14, left: 14, right: 14, bottom: 18},
     head: [[t("thP"), t("thC"), t("thI"), t("capital"), t("thS")]],
     body: d.filas.map(f => [f.p, num2(f.cuota), num2(f.interes), num2(f.capital), num2(f.saldo)]),
-    headStyles: {fillColor:[16,36,58]},
-    styles: {halign:"right", fontSize:9},
-    columnStyles: {0:{halign:"center"}}
+    foot: [[t("total"), num2(d.cuota * d.plazo), num2(d.totInt), num2(d.monto), ""]],
+    showFoot: "lastPage",
+    styles: {halign:"right", fontSize:9, cellPadding:2.2, textColor:ink},
+    headStyles: {fillColor:ink, textColor:255, fontStyle:"bold"},
+    footStyles: {fillColor:[225,232,240], textColor:ink, fontStyle:"bold"},
+    alternateRowStyles: {fillColor:[248,250,252]},
+    columnStyles: {0:{halign:"center"}, 2:{textColor:amber}, 3:{textColor:teal}}
   });
+
+  // Pie de página con numeración
+  const n = doc.getNumberOfPages();
+  for(let p = 1; p <= n; p++){
+    doc.setPage(p); doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...mute);
+    doc.setDrawColor(221,229,238); doc.line(14, H-13, W-14, H-13);
+    doc.text("Loan Simulator", 14, H-8); doc.text(t("pageOf", {p, n}), W-14, H-8, {align:"right"});
+  }
   doc.save(t("file"));
 }
 
